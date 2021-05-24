@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MyTag";
     private WebView wView;
-    private static final String map_url="http://172.30.1.33:8080";
+    private static final String map_url="http://192.168.50.124:8080";
     private double lat;
     private double lon;
     Context context;
