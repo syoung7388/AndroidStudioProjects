@@ -1,6 +1,8 @@
 package com.example.kakaopaytest;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.app.Activity;
 import android.util.Log;
 import android.content.Context;
 import android.content.Intent;
@@ -15,7 +17,7 @@ import android.widget.Toast;
 import java.io.EOFException;
 import java.net.URISyntaxException;
 
-public class SubActivity extends AppCompatActivity {
+public class SubActivity extends Activity {
     private static final String TAG = "MyTag";
     WebView sView;
     Context context;
@@ -87,9 +89,10 @@ public class SubActivity extends AppCompatActivity {
                 }else if (url != null && url.contains("pg_token")){
 
                     pg_token = url.substring(url.indexOf("pg_token=")+9);
-                    Intent t_intent = new Intent(SubActivity.this, MainActivity.class);
+                    Intent t_intent = new Intent();
                     t_intent.putExtra("pg_token",pg_token);
-                    startActivity(t_intent);
+                    setResult(RESULT_OK, t_intent);
+                    finish();
                     Log.d(TAG, pg_token);
                 }
                 ////
