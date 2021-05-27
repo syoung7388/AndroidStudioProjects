@@ -11,6 +11,7 @@ import androidx.core.content.FileProvider;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -33,6 +34,7 @@ import android.webkit.WebViewClient;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.IOException;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -67,10 +69,10 @@ public class MainActivity extends AppCompatActivity {
         webSettings.setSupportZoom(false);              // 화면줌 허용 여부
         webSettings.setBuiltInZoomControls(false);      // 화면 확대 축소 허용 여부
         webSettings.setGeolocationEnabled(true);
-//        webSettings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN); // 컨텐츠 사이즈 맞추기
+        webSettings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN); // 컨텐츠 사이즈 맞추기
         webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);        // 브라우저 노캐쉬
         webSettings.setDomStorageEnabled(true);                     // 로컬저장소 허용
-        webView1.loadUrl("http://192.168.0.11:8080");
+        webView1.loadUrl("http://172.30.1.33:8080");
         webView1.setWebChromeClient(new WebChromeClientClass());  //웹뷰에 크롬 사용 허용. 이 부분이 없으면 크롬에서 alert가 뜨지 않음
         webView1.setWebViewClient(new WebViewClientClass());
     }
@@ -168,14 +170,14 @@ public class MainActivity extends AppCompatActivity {
                 {
                     if (filePathCallbackNormal == null) return;
                     Uri result = (data == null || resultCode != RESULT_OK) ? null : data.getData();
-                    Log.d(Tag,"onActivityResult"+result);
+                    Log.d(Tag,"onActivityResult"+resultCode);
 
                     filePathCallbackNormal.onReceiveValue(result);   //  onReceiveValue 로 파일 전송
                     filePathCallbackNormal = null;
                 }
                 break;
             case FILECHOOSER_LOLLIPOP_REQ_CODE: // 2002
-                Log.d(Tag,"onActivityResult=>resultCode:"+resultCode);
+                Log.d(Tag,"onActivityResult=>data:"+data);
 
 
                 if (resultCode == RESULT_OK)
@@ -185,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
                         data = new Intent();
                     if (data.getData() == null)
                         data.setData(cameraImageUri);
-                    Log.d(Tag,"onActivityResult=>data:"+data);
+                    Log.d(Tag,"onActivityResult=>data:"+data.getData());
 
                     filePathCallbackLollipop.onReceiveValue(WebChromeClient.FileChooserParams.parseResult(resultCode, data));
 
@@ -218,14 +220,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //
-    private void runCamera(boolean _isCapture)
-    {
+    private void runCamera(boolean _isCapture) {
         Log.d(Tag , "runCamera=>"+"_isCapture:"+_isCapture);
         Intent intentCamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-        File path = Environment.getExternalStorageDirectory();
+        File path = getExternalCacheDir();
         Log.d(Tag , "runCamera=>"+"path:"+path);// path:/storage/emulated/0
-        File file = new File(path, "aa.png"); // 저장될때  파일명
+        File file = null;
+        try {
+            file = File.createTempFile("photo_", ".jpg", path);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+//        File file = new File(path, "cc.png"); // 저장될때  파일명
         Log.d(Tag , "runCamera=>"+"file:"+file); //file:/storage/emulated/0/sample.png
         // File 객체의 URI 를 얻는다.
 
@@ -257,6 +265,8 @@ public class MainActivity extends AppCompatActivity {
             String pickTitle = "사진 가져올 방법을 선택해 주세요.";
             Intent chooserIntent = Intent.createChooser(pickIntent, pickTitle);
             chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Parcelable[]{intentCamera}); // =>선택창 띄우기
+
+
 
             startActivityForResult(chooserIntent, FILECHOOSER_LOLLIPOP_REQ_CODE);
         }
