@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
         webSettings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN); // 컨텐츠 사이즈 맞추기
         webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);        // 브라우저 노캐쉬
         webSettings.setDomStorageEnabled(true);                     // 로컬저장소 허용
-        webView1.loadUrl("http://172.30.1.33:8080");
+        webView1.loadUrl("http://192.168.50.124:8080");
         webView1.setWebChromeClient(new WebChromeClientClass());  //웹뷰에 크롬 사용 허용. 이 부분이 없으면 크롬에서 alert가 뜨지 않음
         webView1.setWebViewClient(new WebViewClientClass());
     }
