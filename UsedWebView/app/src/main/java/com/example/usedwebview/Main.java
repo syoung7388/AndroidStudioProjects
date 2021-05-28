@@ -16,6 +16,7 @@ import android.provider.MediaStore;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.webkit.JavascriptInterface;
 import android.webkit.JsResult;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
@@ -35,8 +36,8 @@ public class Main extends AppCompatActivity {
 
     public static final String TAG = "Tag";
     public WebView wView;
-    private  static final String used_url="http://192.168.50.124:8080";
-    //private  static final String used_url="http://172.30.1.33:8080";
+    //private  static final String used_url="http://192.168.50.124:8080";
+    private  static final String used_url="http://172.30.1.60:8080";
     Context context;
 
     public final int permissionCode = 1997;
@@ -48,6 +49,10 @@ public class Main extends AppCompatActivity {
     private ValueCallback<Uri> filePathCallbackNormal;
     private ValueCallback<Uri[]> filePathCallbackLollipop;
 
+
+    private static final int kakaocode = 1998;
+
+    String pg_token;
 
 
 
@@ -71,9 +76,13 @@ public class Main extends AppCompatActivity {
         ws.setSupportZoom(false);
         ws.setBuiltInZoomControls(true);
         ws.setGeolocationEnabled(true);
+        ws.setGeolocationDatabasePath(getFilesDir().getPath());
         ws.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
         ws.setCacheMode(WebSettings.LOAD_NO_CACHE);
         ws.setDomStorageEnabled(true);
+        ws.setAppCacheEnabled(true);
+        ws.setDatabaseEnabled(true);
+
 
         if(Build.VERSION.SDK_INT >= 21) {
             ws.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
@@ -81,6 +90,13 @@ public class Main extends AppCompatActivity {
         wView.loadUrl(used_url);
         wView.setWebChromeClient(new WebChromeClientClass());
         wView.setWebViewClient(new WebViewClientClass());
+    }
+
+
+    @Override
+    public void onStart(){
+        super.onStart();
+        wView.addJavascriptInterface(new KakaoBridge(), "kakaopay");
 
     }
 
@@ -288,6 +304,27 @@ public class Main extends AppCompatActivity {
                     }
                 }
                 break;
+
+            case kakaocode:
+                Log.d(TAG, "Main 도착");
+                if(resultCode == RESULT_OK){
+                    pg_token = data.getStringExtra("pg_token");
+                    Log.d(TAG, "pg_token=>"+pg_token);
+                    wView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
+                                wView.evaluateJavascript("Token_Ok('"+pg_token+"')",null);
+                            }else {
+                                wView.loadUrl("javascript:Token_Ok('"+pg_token+"')");
+                            }
+                        }
+                    });
+
+                }else {
+                    Log.d(TAG, "오류발생");
+                }
+
             default:
 
                 break;
@@ -309,6 +346,21 @@ public class Main extends AppCompatActivity {
             return true;
         }
 
+    }
+
+    private class KakaoBridge{
+        @JavascriptInterface
+        public void PayWindow(String url){
+            Log.d(TAG, url);//alert창으로 생각하셈
+            wView.post(new Runnable() {
+                @Override
+                public void run() {
+                    Intent intent = new Intent(Main.this , Kakao.class);
+                    intent.putExtra("url", url);
+                    startActivityForResult(intent, kakaocode);
+                }
+            });
+        }
     }
 
 

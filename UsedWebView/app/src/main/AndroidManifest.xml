@@ -7,6 +7,10 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="com.kakao.talk" />
+    <queries>
+        <package android:name="com.kakao.talk" />
+    </queries>
 
     <uses-feature
         android:name="android.hardware.camera"
@@ -43,6 +47,8 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 />
         </provider>
+
+        <activity android:name=".Kakao"></activity>
 
         <activity android:name=".Main">
             <intent-filter>
