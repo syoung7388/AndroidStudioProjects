@@ -1,4 +1,4 @@
-package com.example.usedwebview;
+package com.used.usedwebview;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlarmManager;

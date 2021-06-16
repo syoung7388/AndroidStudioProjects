@@ -1,4 +1,4 @@
-package com.example.usedwebview;
+package com.used.usedwebview;
 
 
 import android.annotation.SuppressLint;
@@ -37,7 +37,7 @@ public class Main extends AppCompatActivity {
     public static final String TAG = "Tag";
     public WebView wView;
     //private  static final String used_url="http://192.168.50.124:8080";
-    private  static final String used_url="http://172.30.1.60:8080";
+    private  static final String used_url="http://3.34.22.100";
     Context context;
 
     public final int permissionCode = 1997;
